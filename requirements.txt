@@ -10,3 +10,5 @@ requests
 pytest-html
 dnspython
 pymongo
+pytest-mock
+coverage
