@@ -26,7 +26,10 @@ def index():
     data = []
     for item in collection.find():
         data.append(item)
-    return json.dumps(data, indent=4, default=json_util.default), 200
+    if len(data) > 0:
+        return json.dumps(data, indent=4, default=json_util.default), 200
+    else:
+        return json_util.dumps({"error": "Item not found."}), 404
 
 @app.get("/part/<part_id>")
 def get_part(part_id):

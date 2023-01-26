@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 from bson.objectid import ObjectId
 import datetime as date
 from unittest.mock import Mock, patch
@@ -20,6 +19,12 @@ def find(mocker):
     mocker.returncode = 200
     return mocker;
 
+@patch("pymongo.collection.Collection.find")
+def find_fail(mocker):
+    mocker.return_value = [{"error": "Item not found."}]
+    mocker.returncode = 404
+    return mocker;
+
 @patch("pymongo.collection.Collection.find_one")
 def find_one(mocker):
     mocker.return_value = [{"_id": {"$oid": objectid}, 
@@ -38,7 +43,7 @@ def find_one(mocker):
 
 @patch("pymongo.collection.Collection.find_one")
 def find_one_fail(mocker):
-    mocker.return_value = [{"error": "Item not found"}]
+    mocker.return_value = [{"error": "Item not found."}]
     mocker.returncode = 404
     return mocker;
 
@@ -56,7 +61,7 @@ def update_one(mocker):
 
 @patch("pymongo.collection.Collection.update_one")
 def update_one_fail(mocker):
-    mocker.return_value = [{"error": "Item not found"}]
+    mocker.return_value = [{"error": "Item not found."}]
     mocker.returncode = 404
     return mocker;
 
@@ -68,7 +73,7 @@ def delete_one(mocker):
 
 @patch("pymongo.collection.Collection.delete_one")
 def delete_one_fail(mocker):
-    mocker.return_value = [{"error": "Item not found"}]
+    mocker.return_value = [{"error": "Item not found."}]
     mocker.returncode = 404
     return mocker;
 
@@ -79,6 +84,13 @@ def test_index():
     print(f"Expected Output: length == 1 | Output: length == {len(data.return_value)}")
     print(f"Expected Output: returncode == 200 | Output: returncode == {data.returncode}")
 
+def test_index_fail():
+    data = find_fail()
+    assert data.return_value[0]["error"] == "Item not found."
+    assert data.returncode == 404
+    print(f'Expected Output: status == Item not found | Output: status == {data.return_value[0]["error"]}')
+    print(f"Expected Output: returncode == 404 | Output: returncode == {data.returncode}")
+
 def test_get_part():
     data = find_one()
     assert len(data.return_value) > 0
@@ -88,7 +100,7 @@ def test_get_part():
 
 def test_get_part_fail():
     data = find_one_fail()
-    assert data.return_value[0]["error"] == "Item not found"
+    assert data.return_value[0]["error"] == "Item not found."
     assert data.returncode == 404
     print(f'Expected Output: status == Item not found | Output: status == {data.return_value[0]["error"]}')
     print(f"Expected Output: returncode == 404 | Output: returncode == {data.returncode}")
@@ -102,7 +114,7 @@ def test_update_part():
 
 def test_update_part_fail():
     data = update_one_fail()
-    assert data.return_value[0]["error"] == "Item not found"
+    assert data.return_value[0]["error"] == "Item not found."
     assert data.returncode == 404
     print(f'Expected Output: status == Item not found | Output: status == {data.return_value[0]["error"]}')
     print(f"Expected Output: returncode == 404 | Output: returncode == {data.returncode}")
@@ -116,7 +128,7 @@ def test_delete_part():
 
 def test_delete_part_fail():
     data = delete_one_fail()
-    assert data.return_value[0]["error"] == "Item not found"
+    assert data.return_value[0]["error"] == "Item not found."
     assert data.returncode == 404
     print(f'Expected Output: status == Item not found | Output: status == {data.return_value[0]["error"]}')
     print(f"Expected Output: returncode == 404 | Output: returncode == {data.returncode}")
