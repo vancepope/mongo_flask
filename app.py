@@ -27,7 +27,7 @@ def index():
     for item in collection.find():
         data.append(item)
     if len(data) > 0:
-        return json.dumps(data, indent=4, default=json_util.default), 200
+        return json_util.dumps(data, indent=4, default=json_util.default), 200
     else:
         return json_util.dumps({"error": "Item not found."}), 404
 
