@@ -1,6 +1,5 @@
 from bson.objectid import ObjectId
-import datetime as date
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 objectid = ObjectId()
 @patch("pymongo.collection.Collection.find")
