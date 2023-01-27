@@ -43,7 +43,10 @@ def get_part(part_id):
 def create_part():
     part = request.get_json()
     result = collection.insert_one(part)
-    return json_util.dumps({"_id": str(result.inserted_id)})
+    if result.inserted_id:
+        return json_util.dumps({"_id": str(result.inserted_id)})
+    else:
+        return json_util.dumps({"error": "Item not found"}), 400
     
 @app.put("/part/<part_id>")
 def update_part(part_id):
